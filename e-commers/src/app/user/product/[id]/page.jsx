@@ -53,7 +53,6 @@ const Product = () => {
             })
     }
 
-    console.log("getSingleProduct", getSingleProduct)
 
     return getSingleProduct ? (<>
         <Navbar />
