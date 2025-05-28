@@ -21,4 +21,14 @@ export const getProductById = async (data) => {
   }
 };
 
+export const addToCart = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}addToCart`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+
 

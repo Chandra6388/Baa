@@ -53,6 +53,7 @@ const Product = () => {
             })
     }
 
+    console.log("getSingleProduct", getSingleProduct)
 
     return getSingleProduct ? (<>
         <Navbar />
@@ -84,28 +85,29 @@ const Product = () => {
                                     height={720}
                                 />
                             </div>
-
                         ))}
                     </div>
                 </div>
-
                 <div className="flex flex-col">
                     <h1 className="text-3xl font-medium text-gray-800/90 mb-4">
                         {getSingleProduct?.name}
                     </h1>
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-0.5">
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image
-                                className="h-4 w-4"
-                                src={assets.star_dull_icon}
-                                alt="star_dull_icon"
-                            />
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <Image
+                                    key={index}
+                                    className="h-3 w-3"
+                                    src={
+                                        index < Math.floor(getSingleProduct?.rating)
+                                            ? assets.star_icon
+                                            : assets.star_dull_icon
+                                    }
+                                    alt="star_icon"
+                                />
+                            ))}
                         </div>
-                        <p>(4.5)</p>
+                        <p>{getSingleProduct?.rating}</p>
                     </div>
                     <p className="text-gray-600 mt-3">
                         {getSingleProduct?.description}
