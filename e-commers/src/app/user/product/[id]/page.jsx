@@ -13,6 +13,7 @@ import { getProductById, getTopRatedProducts } from "@/service/user/productServi
 
 const Product = () => {
     const { id } = useParams();
+    const userDetails = 
     const [getSingleProduct, setSigleProduct] = useState(null)
     const { router, addToCart } = useAppContext()
     const [mainImage, setMainImage] = useState(null);
