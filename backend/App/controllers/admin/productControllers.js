@@ -135,33 +135,7 @@ class ProductController {
         }
     }
 
-
-    async AddToCart(req, res) {
-        const { userId, ProductId } = req.body
-
-        try {
-            if (!userId) {
-                return res.send({ status: false, message: "User Id is require" })
-            }
-            if (!ProductId) {
-                return res.send({ status: false, message: "Product Id is require" })
-            }
-
-            const newData = new addToCardDB({
-                userId,
-               productId: ProductId
-            })
-
-            console.log("sss", newData)
-            await newData.save()
-
-            return res.send({ status: true, message: "New product added  in cart", data: newData })
-        }
-        catch (error) {
-            return res.send({ status: false, message: "Internal server error", error: error.message })
-        }
-
-    }
+   
 
 
 }
