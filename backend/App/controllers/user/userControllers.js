@@ -33,6 +33,22 @@ class User {
         }
 
     }
+
+    async allAddToCartProduct(req, res){
+        const {userId}= req.body
+        if(!userId){
+            return res.send({status: false, message:"User id is require"})
+        }
+        try{
+            const data = await addToCardDB.find({userId}).sort({ createdAt: -1 });
+            
+            return res.send({status: true, message: "All cart data find successfully", data:data})
+
+        }
+        catch(error){
+            return res.send({status: false, message:"Internal server error", error: error.message})
+        }
+    }
 }
 
 
