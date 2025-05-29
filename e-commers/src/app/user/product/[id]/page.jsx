@@ -13,11 +13,6 @@ import Swal from "sweetalert2";
 import { getProductById, getTopRatedProducts, addToCart } from "@/service/user/productService"
  
 
-
-
-
-
-
 const Product = () => {
     const { id } = useParams();
     const [getSingleProduct, setSigleProduct] = useState(null)
