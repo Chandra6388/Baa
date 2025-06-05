@@ -31,4 +31,15 @@ export const addToCart = async (data) => {
   }
 };
 
+export const getAllCategory = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}get-all-category`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+
+
 

@@ -1,56 +1,50 @@
-'use client'
-import { useState } from "react";
+'use client';
+import { useEffect, useState } from "react";
 import ProductCard from "@/compoents/ProductCard";
 import Navbar from "@/compoents/Navbar";
 import Footer from "@/compoents/Footer";
 import { useAppContext } from "@/context/AppContext";
-import {
-    Tabs,
-    TabsHeader,
-    TabsBody,
-    Tab,
-    TabPanel,
-} from "@material-tailwind/react";
+import { getAllCategory } from '@/service/user/productService'
 
 const AllProducts = () => {
-    const [activeTab, setActiveTab] = useState("html");
+    const [activeTab, setActiveTab] = useState("all");
+    const [animate, setAnimate] = useState(false);
     const { products } = useAppContext();
+    const [getCategory, setCategory] = useState([])
 
-    const data = [
-        {
-            label: "HTML",
-            value: "html",
-            desc: `It really matters and then like it really doesn't matter.
-            What matters is the people who are sparked by it. And the people
-            who are like offended by it, it doesn't matter.`,
-        },
-        {
-            label: "React",
-            value: "react",
-            desc: `Because it's about motivating the doers. Because I'm here
-            to follow my dreams and inspire other people to follow their dreams, too.`,
-        },
-        {
-            label: "Vue",
-            value: "vue",
-            desc: `We're not always in the position that we want to be at.
-            We're constantly growing. We're constantly making mistakes. We're
-            constantly trying to express ourselves and actualize our dreams.`,
-        },
-        {
-            label: "Angular",
-            value: "angular",
-            desc: `Because it's about motivating the doers. Because I'm here
-            to follow my dreams and inspire other people to follow their dreams, too.`,
-        },
-        {
-            label: "Svelte",
-            value: "svelte",
-            desc: `We're not always in the position that we want to be at.
-            We're constantly growing. We're constantly making mistakes. We're
-            constantly trying to express ourselves and actualize our dreams.`,
-        },
-    ];
+    console.log("err", getCategory)
+    useEffect(() => {
+        category()
+    }, [])
+    const category = async () => {
+        await getAllCategory()
+            .then((res) => {
+                if (res.status) {
+                    setCategory(res?.data)
+                }
+                else {
+                    setCategory([])
+                }
+            })
+            .catch((error) => {
+                console.log("error in fetching the category", error)
+            })
+    }
+
+
+
+    const filteredProducts =
+        activeTab === "all"
+            ? products
+            : products.filter((product) =>
+                product.category?.toLowerCase() === activeTab
+            );
+
+    useEffect(() => {
+        setAnimate(true);
+        const timer = setTimeout(() => setAnimate(false), 500);
+        return () => clearTimeout(timer);
+    }, [activeTab]);
 
     return (
         <>
@@ -61,49 +55,33 @@ const AllProducts = () => {
                     <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
                 </div>
 
-                {/* Tabs */}
-                <Tabs value={activeTab} onChange={(val) => setActiveTab(val)} className="w-full mt-10">
-                    <TabsHeader
-                        className="bg-gray-100 p-1 rounded-full"
-                        indicatorProps={{
-                            className: "bg-white shadow rounded-full",
-                        }}
-                    >
-                        {data.map(({ label, value }) => (
-                            <Tab
-                                key={value}
-                                value={value}
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? "bg-white text-gray-900 font-semibold rounded-full px-4 py-1 transition-all duration-300"
-                                        : "text-gray-600 px-4 py-1 transition-all duration-300"
-                                }
-                            >
-                                {label}
-                            </Tab>
-                        ))}
-                    </TabsHeader>
-
-                    <TabsBody
-                        animate={{
-                            initial: { y: 250 },
-                            mount: { y: 0 },
-                            unmount: { y: 250 },
-                        }}
-                    >
-                        {data.map(({ value, desc }) => (
-                            <TabPanel key={value} value={value}>
-                                <p className="text-gray-700 text-lg">{desc}</p>
-                            </TabPanel>
-                        ))}
-                    </TabsBody>
-                </Tabs>
-
-                {/* Product List */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-col items-center gap-6 mt-12 pb-14 w-full">
-                    {products.map((product, index) => (
-                        <ProductCard key={index} product={product} />
+                <div className="flex flex-wrap justify-start gap-4 bg-gray-100 p-4 mt-10 rounded-full w-full overflow-x-auto">
+                    {getCategory.map((item) => (
+                        <button
+                            key={item?._id}
+                            onClick={() => setActiveTab(item?._id)}
+                            className={`px-5 py-2 rounded-full font-medium transition-all duration-200
+                                ${activeTab === item?._id
+                                    ? "bg-orange-500 text-white shadow"
+                                    : "bg-white text-gray-800 hover:bg-orange-100"
+                                }`}
+                        >
+                            {item?.name}
+                        </button>
                     ))}
+                </div>
+                <div
+                    key={activeTab}
+                    className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12 pb-14 w-full 
+                    ${animate ? "animate-slide-in-left" : ""}`}
+                >
+                    {filteredProducts.length > 0 ? (
+                        filteredProducts.map((product, index) => (
+                            <ProductCard key={index} product={product} />
+                        ))
+                    ) : (
+                        <p className="col-span-full text-center text-gray-500">No products found</p>
+                    )}
                 </div>
             </div>
             <Footer />
