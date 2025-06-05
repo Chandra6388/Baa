@@ -3,20 +3,21 @@ import { useEffect, useState } from "react";
 import ProductCard from "@/compoents/ProductCard";
 import Navbar from "@/compoents/Navbar";
 import Footer from "@/compoents/Footer";
-import { useAppContext } from "@/context/AppContext";
 import { getAllCategory, getAllProduct } from '@/service/user/productService'
 
 const AllProducts = () => {
     const [activeTab, setActiveTab] = useState("");
     const [animate, setAnimate] = useState(false);
-    const { products } = useAppContext();
     const [getCategory, setCategory] = useState([])
     const [productArr, setProductArr] = useState([])
 
-    console.log("productArr", productArr)
     useEffect(() => {
         category()
     }, [])
+
+    useEffect(() => {
+        getProducts()
+    }, [activeTab])
 
     const category = async () => {
         await getAllCategory()
@@ -34,12 +35,8 @@ const AllProducts = () => {
             })
     }
 
-    useEffect(() => {
-        getProducts()
-    }, [activeTab])
-
     const getProducts = async () => {
-        if(!activeTab || activeTab==null || activeTab==undefined || activeTab=="") return
+        if (!activeTab || activeTab == null || activeTab == undefined || activeTab == "") return
         const req = { categoryId: activeTab }
         await getAllProduct(req)
             .then((res) => {
@@ -54,7 +51,6 @@ const AllProducts = () => {
                 console.log("Error in finding the product", error)
             })
     }
-   
 
     useEffect(() => {
         setAnimate(true);

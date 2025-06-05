@@ -2,6 +2,7 @@ const db = require("../../models");
 const CategoryDb = db.category;
 const Product = db.product;
 const addToCardDB = db.addToCard1;
+const mongoose = require('mongoose');
 
 
 class ProductController {
@@ -35,23 +36,70 @@ class ProductController {
         }
     }
 
-    async getAllProducts(req, res) {
-        const { categoryId } = req.body;
 
-        try {
-            const products = await Product.find({category_id: categoryId})
-                .populate("category_id", "name")
-                .sort({ createdAt: -1 });
 
-            if (products.length === 0) {
-                return res.send({ status: false, data: [], message: "No products found" });
+async  getAllProducts(req, res) {
+    const { categoryId, userId } = req.body;
+
+
+    try {
+        const products = await Product.aggregate([
+            {
+                $match: {
+                    category_id: new mongoose.Types.ObjectId(categoryId)
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            },
+            {
+                $lookup: {
+                    from: "addToCart",  // ✅ make sure this is the correct collection name in MongoDB
+                    let: { productId: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$productId", "$$productId"] },
+                                        { $eq: ["$userId", new mongoose.Types.ObjectId(userId)] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "cartData"
+                }
+            },
+            {
+                $addFields: {
+                    isAddedToCart: { $gt: [{ $size: "$cartData" }, 0] }
+                }
+            },
+            {
+                $project: {
+                    cartData: 0
+                }
             }
+        ]);
 
-            return res.send({ status: true, data: products, message: "Products fetched successfully" });
-        } catch (error) {
-            return res.status(500).json({ status: false, message: "Error fetching products", error: error.message });
+    console.log("re", req.body)
+
+        if (products.length === 0) {
+            return res.send({ status: false, data: [], message: "No products found" });
         }
+
+        return res.send({ status: true, data: products, message: "Products fetched successfully" });
+
+    } catch (error) {
+        console.log("Err, ",error)
+        return res.status(500).json({
+            status: false,
+            message: "Error fetching products",
+            error: error.message
+        });
     }
+}
 
     async getTopRatedProducts(req, res) {
 
@@ -134,7 +182,7 @@ class ProductController {
         }
     }
 
-   
+
 
 
 }
