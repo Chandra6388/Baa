@@ -1,4 +1,5 @@
 'use client'
+import { useState } from "react";
 import ProductCard from "@/compoents/ProductCard";
 import Navbar from "@/compoents/Navbar";
 import Footer from "@/compoents/Footer";
@@ -10,50 +11,47 @@ import {
     Tab,
     TabPanel,
 } from "@material-tailwind/react";
-import { useState } from "react";
 
 const AllProducts = () => {
     const [activeTab, setActiveTab] = useState("html");
-
     const { products } = useAppContext();
+
     const data = [
         {
             label: "HTML",
             value: "html",
             desc: `It really matters and then like it really doesn't matter.
-      What matters is the people who are sparked by it. And the people
-      who are like offended by it, it doesn't matter.`,
+            What matters is the people who are sparked by it. And the people
+            who are like offended by it, it doesn't matter.`,
         },
         {
             label: "React",
             value: "react",
             desc: `Because it's about motivating the doers. Because I'm here
-      to follow my dreams and inspire other people to follow their dreams, too.`,
+            to follow my dreams and inspire other people to follow their dreams, too.`,
         },
-
         {
             label: "Vue",
             value: "vue",
             desc: `We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
+            We're constantly growing. We're constantly making mistakes. We're
+            constantly trying to express ourselves and actualize our dreams.`,
         },
-
         {
             label: "Angular",
             value: "angular",
             desc: `Because it's about motivating the doers. Because I'm here
-      to follow my dreams and inspire other people to follow their dreams, too.`,
+            to follow my dreams and inspire other people to follow their dreams, too.`,
         },
-
         {
             label: "Svelte",
             value: "svelte",
             desc: `We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
+            We're constantly growing. We're constantly making mistakes. We're
+            constantly trying to express ourselves and actualize our dreams.`,
         },
     ];
+
     return (
         <>
             <Navbar />
@@ -63,6 +61,7 @@ const AllProducts = () => {
                     <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
                 </div>
 
+                {/* Tabs */}
                 <Tabs value={activeTab} onChange={(val) => setActiveTab(val)} className="w-full mt-10">
                     <TabsHeader
                         className="bg-gray-100 p-1 rounded-full"
@@ -94,16 +93,17 @@ const AllProducts = () => {
                     >
                         {data.map(({ value, desc }) => (
                             <TabPanel key={value} value={value}>
-                                {desc}
+                                <p className="text-gray-700 text-lg">{desc}</p>
                             </TabPanel>
                         ))}
                     </TabsBody>
                 </Tabs>
 
-
-
+                {/* Product List */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-col items-center gap-6 mt-12 pb-14 w-full">
-                    {products.map((product, index) => <ProductCard key={index} product={product} />)}
+                    {products.map((product, index) => (
+                        <ProductCard key={index} product={product} />
+                    ))}
                 </div>
             </div>
             <Footer />
