@@ -42,4 +42,14 @@ export const getAllCategory = async (data) => {
 };
 
 
+export const getAllProduct = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}get-all-products`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+
 

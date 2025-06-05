@@ -4,23 +4,26 @@ import ProductCard from "@/compoents/ProductCard";
 import Navbar from "@/compoents/Navbar";
 import Footer from "@/compoents/Footer";
 import { useAppContext } from "@/context/AppContext";
-import { getAllCategory } from '@/service/user/productService'
+import { getAllCategory, getAllProduct } from '@/service/user/productService'
 
 const AllProducts = () => {
-    const [activeTab, setActiveTab] = useState("all");
+    const [activeTab, setActiveTab] = useState("");
     const [animate, setAnimate] = useState(false);
     const { products } = useAppContext();
     const [getCategory, setCategory] = useState([])
+    const [productArr, setProductArr] = useState([])
 
-    console.log("err", getCategory)
+    console.log("productArr", productArr)
     useEffect(() => {
         category()
     }, [])
+
     const category = async () => {
         await getAllCategory()
             .then((res) => {
                 if (res.status) {
                     setCategory(res?.data)
+                    setActiveTab(res?.data?.[0]?._id)
                 }
                 else {
                     setCategory([])
@@ -31,14 +34,27 @@ const AllProducts = () => {
             })
     }
 
+    useEffect(() => {
+        getProducts()
+    }, [activeTab])
 
-
-    const filteredProducts =
-        activeTab === "all"
-            ? products
-            : products.filter((product) =>
-                product.category?.toLowerCase() === activeTab
-            );
+    const getProducts = async () => {
+        if(!activeTab || activeTab==null || activeTab==undefined || activeTab=="") return
+        const req = { categoryId: activeTab }
+        await getAllProduct(req)
+            .then((res) => {
+                if (res?.status) {
+                    setProductArr(res?.data)
+                }
+                else {
+                    setProductArr([])
+                }
+            })
+            .catch((error) => {
+                console.log("Error in finding the product", error)
+            })
+    }
+   
 
     useEffect(() => {
         setAnimate(true);
@@ -75,8 +91,8 @@ const AllProducts = () => {
                     className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12 pb-14 w-full 
                     ${animate ? "animate-slide-in-left" : ""}`}
                 >
-                    {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product, index) => (
+                    {productArr.length > 0 ? (
+                        productArr.map((product, index) => (
                             <ProductCard key={index} product={product} />
                         ))
                     ) : (

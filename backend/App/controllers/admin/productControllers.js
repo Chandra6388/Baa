@@ -36,11 +36,10 @@ class ProductController {
     }
 
     async getAllProducts(req, res) {
-        const { categoryId } = req.query;
-        const query = categoryId ? { category_id: categoryId } : {};
+        const { categoryId } = req.body;
 
         try {
-            const products = await Product.find(query)
+            const products = await Product.find({category_id: categoryId})
                 .populate("category_id", "name")
                 .sort({ createdAt: -1 });
 
