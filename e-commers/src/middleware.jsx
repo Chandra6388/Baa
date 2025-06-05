@@ -11,20 +11,20 @@ export function middleware(request) {
   const userData = JSON.parse(userCookie);
 
 
-  // Admin check
-  if (request.nextUrl.pathname.startsWith('/admin') && userData.role !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  // // Admin check
+  // if (request.nextUrl.pathname.startsWith('/admin') && userData.role !== 'ADMIN') {
+  //   return NextResponse.redirect(new URL('/', request.url));
+  // }
 
-  // User check
-  if (request.nextUrl.pathname.startsWith('/user') && userData.role !== 'USER') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  // // User check
+  // if (request.nextUrl.pathname.startsWith('/user') && userData.role !== 'USER') {
+  //   return NextResponse.redirect(new URL('/', request.url));
+  // }
 
-  // Seller check
-  if (request.nextUrl.pathname.startsWith('/seller') && userData.role !== 'SELLER') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  // // Seller check
+  // if (request.nextUrl.pathname.startsWith('/seller') && userData.role !== 'SELLER') {
+  //   return NextResponse.redirect(new URL('/', request.url));
+  // }
 
   return NextResponse.next();
 }
