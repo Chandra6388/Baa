@@ -4,7 +4,7 @@ const Product = db.product;
 const addToCardDB = db.addToCard1;
 const mongoose = require('mongoose');
 
-hthgt
+ 
 class ProductController {
     async addProduct(req, res) {
         const { name, description, price, categoryId, image_url, offer_price } = req.body;
