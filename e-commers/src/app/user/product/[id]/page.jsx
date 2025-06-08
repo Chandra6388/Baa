@@ -11,7 +11,7 @@ import { useAppContext } from "@/context/AppContext";
 import React from "react";
 import Swal from "sweetalert2";
 import { getProductById, getTopRatedProducts, addToCart } from "@/service/user/productService"
- 
+
 
 
 
@@ -51,7 +51,8 @@ const Product = () => {
     }
 
     const topProduct = async () => {
-        const req = { limit: 20 }
+        if (!user?._id) return
+        const req = { limit: 20, userId: user?._id }
         await getTopRatedProducts(req)
             .then((res) => {
                 if (res.status) {

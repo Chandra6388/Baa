@@ -4,14 +4,26 @@ import { useAppContext } from "@/context/AppContext";
 import { getTopRatedProducts } from "@/service/user/productService";
 
 const HomeProducts = () => {
+
   const [getTopRatedProductsData, setGetTopRatedProductsData] = useState([]);
+  const [user, setUser] = useState(null);
+
+
 
   useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+
     topProduct()
-  }, [])
+  }, []);
+
+
 
   const topProduct = async () => {
-    const req = { limit: 20 }
+    if (!user?._id) return
+    const req = { limit: 20, userId: user?._id }
     await getTopRatedProducts(req)
       .then((res) => {
         if (res.status) {
@@ -31,7 +43,7 @@ const HomeProducts = () => {
   return (
     <div className="flex flex-col items-center pt-14">
       <p className="text-2xl font-medium text-left w-full">Popular products</p>
-     
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-col items-center gap-6 mt-6 pb-14 w-full">
         {getTopRatedProductsData?.map((product, index) => <ProductCard key={index} product={product} />)}
       </div>
