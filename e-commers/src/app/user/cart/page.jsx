@@ -5,11 +5,13 @@ import OrderSummary from "@/compoents/OrderSummary";
 import Image from "next/image";
 import Navbar from "@/compoents/Navbar";
 import { useAppContext } from "@/context/AppContext";
-import { getCartProduct } from "@/service/user/productService"
+import { getCartProduct, quantityIncOrDce } from "@/service/user/productService";
 
 const Cart = () => {
-  const [getProducts, setProducts] = useState([])
+  const [getProducts, setProducts] = useState([]);
   const [user, setUser] = useState(null);
+
+  const { router, getCartCount } = useAppContext();
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -19,29 +21,48 @@ const Cart = () => {
   }, []);
 
   useEffect(() => {
-    product()
-  }, [user])
+    if (user) {
+      fetchCartProducts();
+    }
+  }, [user]);
 
-  console.log("getProducts", getProducts)
+  const fetchCartProducts = async () => {
+    try {
+      const req = { userId: user?._id };
+      const res = await getCartProduct(req);
+      if (res.status) {
+        setProducts(res.data);
+      } else {
+        setProducts([]);
+      }
+    } catch (error) {
+      console.log("Error fetching cart products", error);
+    }
+  };
 
-  const product = async () => {
-    const req = { userId: user?._id }
-    await getCartProduct(req)
-      .then((res) => {
-        if (res.status) {
-          setProducts(res?.data)
+  const updateCartQuantity = async (id, quantity) => {
+    const req = { id, Quantity: quantity };
+
+    // ✅ Update UI immediately
+    const updatedProducts = getProducts
+      .map((item) => {
+        if (item._id === id) {
+          if (quantity <= 0) return null; // remove item
+          return { ...item, Quantity: quantity };
         }
-        else {
-          setProducts([])
-        }
+        return item;
       })
-      .catch((error) => {
-        console.log("error in feching add to card product", error)
-      })
+      .filter(Boolean);
 
-  }
+    setProducts(updatedProducts);
 
-  const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount } = useAppContext();
+    // 🔄 Sync with backend
+    try {
+      await quantityIncOrDce(req);
+    } catch (error) {
+      console.log("Error updating quantity", error);
+    }
+  };
 
   return (
     <>
@@ -58,7 +79,7 @@ const Cart = () => {
             <table className="min-w-full table-auto">
               <thead className="text-left">
                 <tr>
-                  <th className="text-nowrap pb-6 md:px-4 px-1 text-gray-600 font-medium">
+                  <th className="pb-6 md:px-4 px-1 text-gray-600 font-medium">
                     Product Details
                   </th>
                   <th className="pb-6 md:px-4 px-1 text-gray-600 font-medium">
@@ -73,74 +94,76 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {getProducts.map((itemId) => {
-                  return (
-                    <tr key={itemId}>
-                      <td className="flex items-center gap-4 py-4 md:px-4 px-1">
-                        <div>
-                          <div className="rounded-lg overflow-hidden bg-gray-500/10 p-2">
-                            <Image
-                              src={product.image[0]}
-                              alt={product.name}
-                              className="w-16 h-auto object-cover mix-blend-multiply"
-                              width={1280}
-                              height={720}
-                            />
-                          </div>
-                          <button
-                            className="md:hidden text-xs text-orange-600 mt-1"
-                            onClick={() => updateCartQuantity(product._id, 0)}
-                          >
-                            Remove
-                          </button>
+                {getProducts.map((item) => (
+                  <tr key={item?._id}>
+                    <td className="flex items-center gap-4 py-4 md:px-4 px-1">
+                      <div>
+                        <div className="rounded-lg overflow-hidden bg-gray-500/10 p-2">
+                          <Image
+                            src={item?.productDetails.image_url[0]}
+                            alt={item?.productDetails?.name}
+                            className="w-16 h-auto object-cover mix-blend-multiply"
+                            width={1280}
+                            height={720}
+                          />
                         </div>
-                        <div className="text-sm hidden md:block">
-                          <p className="text-gray-800">{product.name}</p>
-                          <button
-                            className="text-xs text-orange-600 mt-1"
-                            onClick={() => updateCartQuantity(product._id, 0)}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </td>
-                      <td className="py-4 md:px-4 px-1 text-gray-600">${product.offerPrice}</td>
-                      <td className="py-4 md:px-4 px-1">
-                        <div className="flex items-center md:gap-2 gap-1">
-                          <button onClick={() => updateCartQuantity(product._id, cartItems[itemId] - 1)}>
-                            <Image
-                              src={assets.decrease_arrow}
-                              alt="decrease_arrow"
-                              className="w-4 h-4"
-                            />
-                          </button>
-                          <input onChange={e => updateCartQuantity(product._id, Number(e.target.value))} type="number" value={cartItems[itemId]} className="w-8 border text-center appearance-none"></input>
-                          <button onClick={() => addToCart(product._id)}>
-                            <Image
-                              src={assets.increase_arrow}
-                              alt="increase_arrow"
-                              className="w-4 h-4"
-                            />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="py-4 md:px-4 px-1 text-gray-600">${(product.offerPrice * cartItems[itemId]).toFixed(2)}</td>
-                    </tr>
-                  );
-                })}
+                        <button
+                          className="md:hidden text-xs text-orange-600 mt-1"
+                          onClick={() => updateCartQuantity(item._id, 0)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div className="text-sm hidden md:block">
+                        <p className="text-gray-800">{item?.productDetails?.name}</p>
+                        <button
+                          className="text-xs text-orange-600 mt-1"
+                          onClick={() => updateCartQuantity(item._id, 0)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-4 md:px-4 px-1 text-gray-600">
+                      ${item?.productDetails?.offer_price}
+                    </td>
+                    <td className="py-4 md:px-4 px-1">
+                      <div className="flex items-center md:gap-2 gap-1">
+                        <button onClick={() => updateCartQuantity(item._id, item.Quantity - 1)}>
+                          <Image src={assets.decrease_arrow} alt="decrease" className="w-4 h-4" />
+                        </button>
+                        <input
+                          type="number"
+                          value={item.Quantity}
+                          readOnly
+                          className="w-8 border text-center appearance-none"
+                        />
+                        <button onClick={() => updateCartQuantity(item._id, item.Quantity + 1)}>
+                          <Image src={assets.increase_arrow} alt="increase" className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-4 md:px-4 px-1 text-gray-600">
+                      ${(item?.productDetails?.offer_price * item?.Quantity).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <button onClick={() => router.push('/all-products')} className="group flex items-center mt-6 gap-2 text-orange-600">
+          <button
+            onClick={() => router.push("/all-products")}
+            className="group flex items-center mt-6 gap-2 text-orange-600"
+          >
             <Image
               className="group-hover:-translate-x-1 transition"
               src={assets.arrow_right_icon_colored}
-              alt="arrow_right_icon_colored"
+              alt="arrow right"
             />
             Continue Shopping
           </button>
         </div>
-        <OrderSummary />
+        <OrderSummary products={getProducts} />
       </div>
     </>
   );

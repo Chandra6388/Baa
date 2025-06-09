@@ -57,7 +57,7 @@ class User {
             return res.send({ status: false, message: "User id is require" })
         }
         try {
-            const data = await addToCardDB.find({ userId: userId })
+           
             const filterData = await addToCardDB.aggregate([
                 {
                     $match: {
@@ -65,14 +65,38 @@ class User {
                     }
                 },
                 {
-                    
+                    $lookup: {
+                        from: "products",
+                        localField:"productId",
+                        foreignField: "_id",
+                        as: "productDetails"
+                    }
+                },
+                {
+                    $unwind: "$productDetails"
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        userId: 1,
+                        productId: 1,
+                        Quantity: 1,
+                        productDetails: {
+                            _id: "$productDetails._id",
+                            name: "$productDetails.name",
+                            description: "$productDetails.description",
+                            price: "$productDetails.price",
+                            image_url: "$productDetails.image_url",
+                            offer_price: "$productDetails.offer_price"
+                        }
+                    }
                 }
 
             ])
 
 
 
-            return res.send({ status: true, message: "get all add product", data: data, data1: filterData })
+            return res.send({ status: true, message: "get all add product", data: filterData })
 
         }
         catch (error) {
@@ -80,16 +104,16 @@ class User {
         }
     }
 
-    async QuantityIncOrDce(req, res) {
+    async quantityIncOrDce(req, res) {
         const { id, Quantity } = req.body;
 
         if (!id) {
-            return res.send({ status: false, message: "Product ID is required" });
+            return res.send({ status: false, message: "Add to cart ID is required" });
         }
 
         try {
             if (Quantity <= 0) {
-                const deletedProduct = await AddToCart.findByIdAndDelete(id);
+                const deletedProduct = await addToCardDB.findByIdAndDelete(id);
                 if (!deletedProduct) {
                     return res.send({ status: false, message: "Product not found to delete" });
                 }
@@ -97,7 +121,7 @@ class User {
                 return res.send({ status: true, message: "Product removed from cart" });
             }
 
-            const updatedProduct = await AddToCart.findByIdAndUpdate(
+            const updatedProduct = await addToCardDB.findByIdAndUpdate(
                 id,
                 { Quantity: Quantity },
                 { new: true }

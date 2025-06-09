@@ -62,3 +62,12 @@ export const getCartProduct = async (data) => {
   }
 };
 
+export const quantityIncOrDce = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}quantityIncOrDce`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
