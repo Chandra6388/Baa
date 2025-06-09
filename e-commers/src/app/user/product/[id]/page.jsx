@@ -33,7 +33,7 @@ const Product = () => {
     useEffect(() => {
         getProduct()
         topProduct()
-    }, [])
+    }, [user])
 
     const getProduct = async () => {
         const req = { id: id }

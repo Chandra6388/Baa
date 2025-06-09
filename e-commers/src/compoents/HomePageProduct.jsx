@@ -16,8 +16,12 @@ const HomeProducts = () => {
       setUser(JSON.parse(userData));
     }
 
-    topProduct()
+
   }, []);
+
+  useEffect(() => {
+    topProduct()
+  }, [user])
 
 
 
