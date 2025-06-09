@@ -36,8 +36,6 @@ class ProductController {
         }
     }
 
-
-
     async getAllProducts(req, res) {
         const { categoryId, userId } = req.body;
         try {
