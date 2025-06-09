@@ -48,9 +48,25 @@ const ProductCard = ({ product }) => {
             </div>
             <div className="flex items-end justify-between w-full mt-1">
                 <p className="text-base font-medium">{currency}{product?.offer_price}</p>
-                <button className="max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition">
-                    Buy now
-                </button>
+                {product?.isAddTocart ? (
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            router.push('/user/cart');
+                        }}
+                        className="max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition"
+                    >
+                        Go to cart
+                    </div>
+                ) : (
+                    <button
+                        className="max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs transition"
+                        style={{ backgroundColor: "#f9f100", color: "black" }}
+                    >
+                        Buy now
+                    </button>
+                )}
+
             </div>
         </div>
     )

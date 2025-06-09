@@ -109,15 +109,12 @@ class ProductController {
             return res.send({ status: false, data: [], message: "User ID is required" });
         }
         try {
-            const products = await Product.find()
-                .sort({ rating: -1 })
-                .limit(limit)
-                .populate("category_id", "name");
+           
 
             const filterProducts = await Product.aggregate([
                 {
                     $lookup: {
-                        from: "addToCart",
+                        from: "addtocarts",
                         let: { productId: "$_id" },
                         pipeline: [
                             {
@@ -133,16 +130,26 @@ class ProductController {
                         ],
                         as: "cartData"
                     }
+                },
+                {
+                    $addFields: {
+                        isAddTocart: { $gt: [{ $size: "$cartData" }, 0] }
+                    }
+                },
+                {
+                    $project:{
+                        cartData:0
+                    }
                 }
-               
-            ]);
+
+            ]).sort({rating:-1}).limit(limit);
 
 
-            if (products.length === 0) {
+            if (filterProducts.length === 0) {
                 return res.send({ status: false, data: [], message: "No products found" });
             }
 
-            return res.send({ status: true, data: products, data1: filterProducts, message: "Top rated products fetched successfully" });
+            return res.send({ status: true, data: filterProducts, message: "Top rated products fetched successfully" });
         } catch (error) {
             return res.status(500).json({ status: false, message: "Error fetching top rated products", error: error.message });
         }
