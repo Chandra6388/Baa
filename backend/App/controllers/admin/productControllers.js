@@ -109,7 +109,7 @@ class ProductController {
             return res.send({ status: false, data: [], message: "User ID is required" });
         }
         try {
-           
+
 
             const filterProducts = await Product.aggregate([
                 {
@@ -137,12 +137,12 @@ class ProductController {
                     }
                 },
                 {
-                    $project:{
-                        cartData:0
+                    $project: {
+                        cartData: 0
                     }
                 }
 
-            ]).sort({rating:-1}).limit(limit);
+            ]).sort({ rating: -1 }).limit(limit);
 
 
             if (filterProducts.length === 0) {
@@ -156,14 +156,52 @@ class ProductController {
     }
 
     async getProductById(req, res) {
-        const { id } = req.body;
+        const { id, userId } = req.body;
 
         try {
-            const product = await Product.findById(id).populate("category_id", "name");
-            if (!product) {
+
+            const filterProducts = await Product.aggregate([
+                {
+                    $match: {
+                        _id: new mongoose.Types.ObjectId(id)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "addtocarts",
+                        let: { productId: "$_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $eq: ["$productId", "$$productId"] },
+                                            { $eq: ["$userId", new mongoose.Types.ObjectId(userId)] }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "CartData"
+                    }
+
+                },
+                {
+                    $addFields: {
+                        isAddTocart: { $gt: [{ $size: "$CartData" }, 0] }
+                    }
+                },
+                {
+                    $project: {
+                        CartData: 0
+                    }
+                }
+
+            ])
+            if (!filterProducts) {
                 return res.send({ status: false, data: [], message: "Product not found" });
             }
-            return res.send({ status: true, data: product, message: "Product fetched successfully" });
+            return res.send({ status: true, data: filterProducts, message: "Product fetched successfully" });
         } catch (error) {
             return res.status(500).json({ status: false, message: "Error fetching product", error: error.message });
         }
