@@ -11,6 +11,10 @@ const addToCartModel = Schema({
         ref: 'Products',
         required: true
     },
+    Quantity : {
+        type:Number,
+        default:1
+    }
 
 },
     {

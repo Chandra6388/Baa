@@ -52,4 +52,13 @@ export const getAllProduct = async (data) => {
   }
 };
 
+export const getCartProduct = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}getCartProduct`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
 

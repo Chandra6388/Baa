@@ -1,12 +1,45 @@
 'use client'
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { assets } from "@/assets/assets";
 import OrderSummary from "@/compoents/OrderSummary";
 import Image from "next/image";
 import Navbar from "@/compoents/Navbar";
 import { useAppContext } from "@/context/AppContext";
+import { getCartProduct } from "@/service/user/productService"
 
 const Cart = () => {
+  const [getProducts, setProducts] = useState([])
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  useEffect(() => {
+    product()
+  }, [user])
+
+  console.log("getProducts", getProducts)
+
+  const product = async () => {
+    const req = { userId: user?._id }
+    await getCartProduct(req)
+      .then((res) => {
+        if (res.status) {
+          setProducts(res?.data)
+        }
+        else {
+          setProducts([])
+        }
+      })
+      .catch((error) => {
+        console.log("error in feching add to card product", error)
+      })
+
+  }
 
   const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount } = useAppContext();
 
@@ -40,11 +73,7 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {Object.keys(cartItems).map((itemId) => {
-                  const product = products.find(product => product._id === itemId);
-
-                  if (!product || cartItems[itemId] <= 0) return null;
-
+                {getProducts.map((itemId) => {
                   return (
                     <tr key={itemId}>
                       <td className="flex items-center gap-4 py-4 md:px-4 px-1">
@@ -102,7 +131,7 @@ const Cart = () => {
               </tbody>
             </table>
           </div>
-          <button onClick={()=> router.push('/all-products')} className="group flex items-center mt-6 gap-2 text-orange-600">
+          <button onClick={() => router.push('/all-products')} className="group flex items-center mt-6 gap-2 text-orange-600">
             <Image
               className="group-hover:-translate-x-1 transition"
               src={assets.arrow_right_icon_colored}

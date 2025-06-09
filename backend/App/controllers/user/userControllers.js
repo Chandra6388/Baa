@@ -1,4 +1,5 @@
 "use strict";
+const { default: mongoose } = require('mongoose');
 const db = require('../../models');
 const addToCardDB = db.addToCard1;
 
@@ -57,13 +58,66 @@ class User {
         }
         try {
             const data = await addToCardDB.find({ userId: userId })
-            return res.send({ status: true, message: "get all add product", data: data })
+            const filterData = await addToCardDB.aggregate([
+                {
+                    $match: {
+                        userId: new mongoose.Types.ObjectId(userId)
+                    }
+                },
+                {
+                    
+                }
+
+            ])
+
+
+
+            return res.send({ status: true, message: "get all add product", data: data, data1: filterData })
 
         }
         catch (error) {
             return res.send({ status: false, message: "Internal server error", error: error.message })
         }
     }
+
+    async QuantityIncOrDce(req, res) {
+        const { id, Quantity } = req.body;
+
+        if (!id) {
+            return res.send({ status: false, message: "Product ID is required" });
+        }
+
+        try {
+            if (Quantity <= 0) {
+                const deletedProduct = await AddToCart.findByIdAndDelete(id);
+                if (!deletedProduct) {
+                    return res.send({ status: false, message: "Product not found to delete" });
+                }
+
+                return res.send({ status: true, message: "Product removed from cart" });
+            }
+
+            const updatedProduct = await AddToCart.findByIdAndUpdate(
+                id,
+                { Quantity: Quantity },
+                { new: true }
+            );
+
+            if (!updatedProduct) {
+                return res.send({ status: false, message: "Product not found in cart" });
+            }
+
+            return res.send({ status: true, data: updatedProduct, message: "Quantity updated successfully" });
+
+        } catch (error) {
+            return res.status(500).send({
+                status: false,
+                message: "Internal server error",
+                error: error.message,
+            });
+        }
+    }
+
 }
 
 
