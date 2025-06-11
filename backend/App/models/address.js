@@ -1,7 +1,8 @@
-const { Schema, model } = require('mongoose')
-const addressSchema = Schema({
+
+const mongoose = require("mongoose");
+const addressSchema = new mongoose.Schema({
     userId: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'USER',
         required: true
     },
@@ -40,5 +41,9 @@ const addressSchema = Schema({
         timestamps: true
     });
 
-module.exports = model("address", addressSchema);
+ 
+module.exports = mongoose.model("address", addressSchema);
+
+
+
 

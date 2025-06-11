@@ -1,7 +1,7 @@
 "use strict";
 const { default: mongoose } = require('mongoose');
 const db = require('../../models');
-const address = db.address;
+const addressDB = db.address;
 
 class Address {
     async addAddress(req, res) {
@@ -26,6 +26,18 @@ class Address {
         }
         if (!state) {
             return res.send({ status: false, message: "state is require" })
+        }
+        try{
+            const newAddress = new addressDB({
+                 userId, fullname, phone, pinCode, address, city, state
+            })
+            await newAddress.save();
+
+            return res.send({status:true,message:"new address added successfully", data:newAddress})
+
+        }
+        catch(error){
+            return res.send({status:false, message:"Interal server error pls try again letter",error:error.message})
         }
 
     }
