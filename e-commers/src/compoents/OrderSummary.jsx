@@ -3,14 +3,13 @@ import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import {getAddress} from '@/service/user/productService'
 
-const OrderSummary = ({getProducts}) => {
+const OrderSummary = ({products}) => {
   const { currency, router, getCartCount, getCartAmount } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
   const [user, setUser] = useState(null);
 
-  console.log("CCC", getProducts)
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -48,6 +47,14 @@ const OrderSummary = ({getProducts}) => {
   const createOrder = async () => {
 
   }
+
+  const getTotalItem = () => {
+  return products.reduce((total, item) => total + item.Quantity, 0);
+};
+
+ const getTotalPrice = () => {
+  return products.reduce((total, item) => total + (item.productDetails?.offer_price)*item.Quantity, 0);
+};
 
 
 
@@ -121,20 +128,20 @@ const OrderSummary = ({getProducts}) => {
 
         <div className="space-y-4">
           <div className="flex justify-between text-base font-medium">
-            <p className="uppercase text-gray-600">Items {getCartCount()}</p>
-            <p className="text-gray-800">{currency}{getCartAmount()}</p>
+            <p className="uppercase text-gray-600">Items:- {getTotalItem()}</p>
+            <p className="text-gray-800">{currency}{getTotalPrice()}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
-            <p className="font-medium text-gray-800">Free</p>
+            <p className="font-medium text-gray-800">{getTotalPrice()>200 ? "Free" : "$"+10}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Tax (2%)</p>
-            <p className="font-medium text-gray-800">{currency}{Math.floor(getCartAmount() * 0.02)}</p>
+            <p className="font-medium text-gray-800">{currency}{Math.floor(getTotalPrice() * 0.02)}</p>
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>{currency}{getCartAmount() + Math.floor(getCartAmount() * 0.02)}</p>
+            <p>{currency}{getTotalPrice() + Math.floor(getTotalPrice() * 0.02) + (getTotalPrice()>200 ? 0 : 10)}</p>
           </div>
         </div>
       </div>
