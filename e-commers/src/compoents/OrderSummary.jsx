@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import {getAddress} from '@/service/user/productService'
 
 const OrderSummary = ({products}) => {
-  const { currency, router, getCartCount, getCartAmount } = useAppContext()
+  const { currency, router } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
@@ -129,7 +129,7 @@ const OrderSummary = ({products}) => {
         <div className="space-y-4">
           <div className="flex justify-between text-base font-medium">
             <p className="uppercase text-gray-600">Items:- {getTotalItem()}</p>
-            <p className="text-gray-800">{currency}{getTotalPrice()}</p>
+            <p className="text-gray-800">${getTotalPrice()}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
@@ -137,11 +137,11 @@ const OrderSummary = ({products}) => {
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Tax (2%)</p>
-            <p className="font-medium text-gray-800">{currency}{Math.floor(getTotalPrice() * 0.02)}</p>
+            <p className="font-medium text-gray-800">${Math.floor(getTotalPrice() * 0.02)}</p>
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>{currency}{getTotalPrice() + Math.floor(getTotalPrice() * 0.02) + (getTotalPrice()>200 ? 0 : 10)}</p>
+            <p>${getTotalPrice() + Math.floor(getTotalPrice() * 0.02) + (getTotalPrice()>200 ? 0 : 10)}</p>
           </div>
         </div>
       </div>
