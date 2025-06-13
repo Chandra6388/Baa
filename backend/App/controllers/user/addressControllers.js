@@ -32,9 +32,7 @@ class Address {
                  userId, fullname, phone, pinCode, address, city, state
             })
             await newAddress.save();
-
             return res.send({status:true,message:"new address added successfully", data:newAddress})
-
         }
         catch(error){
             return res.send({status:false, message:"Interal server error pls try again letter",error:error.message})
