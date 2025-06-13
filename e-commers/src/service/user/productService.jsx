@@ -71,3 +71,13 @@ export const quantityIncOrDce = async (data) => {
     throw error;
   }
 };
+
+export const getAddress = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}getAddress`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};

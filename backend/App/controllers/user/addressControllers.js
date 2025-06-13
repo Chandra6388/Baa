@@ -39,6 +39,22 @@ class Address {
         }
 
     }
+    async getAddress(req,res){
+        const {userId} = req.body;
+        if(!userId){
+            return res.send({status:false, message:"User ID is require"})
+        };
+        try{
+            const data = await addressDB.find({userId:userId})
+
+            return res.send({status:true, message:"All address find successfully", data: data})
+
+        }
+        catch(error){
+            return res.send({status:false, message:"Internal server error, pls try again latter", error:error.message})
+        }
+    }
+
 }
 
 

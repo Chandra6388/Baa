@@ -64,6 +64,8 @@ const Cart = () => {
     }
   };
 
+
+  console.log("getProducts", getProducts)
   return (
     <>
       <Navbar />
