@@ -78,18 +78,19 @@ const OrderSummary = ({ products }) => {
 
     try {
       const req = { userId: user._id, price: totalAmount };
-      const data = await createOrder(req); 
+      const data = await createOrder(req);
 
       if (!data.status) {
         alert('Order creation failed');
         return;
       }
 
+      console.log("Payment Success", data)
       const options = {
         key: KEY_ID,
-        amount: data.order.amount, 
+        amount: data.order.amount,
         currency: data.order.currency,
-        name: 'Your Company Name',
+        name: 'Bazaarbeat',
         description: 'Thank you for your purchase',
         order_id: data.order.id,
         handler: function (response) {
@@ -98,7 +99,7 @@ const OrderSummary = ({ products }) => {
         },
         prefill: {
           name: selectedAddress?.fullname || '',
-          email: 'user@example.com',
+          email: 'cppatel6388@gmail.com',
           contact: selectedAddress?.phone || '',
         },
         theme: {
