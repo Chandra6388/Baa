@@ -46,11 +46,12 @@ const OrderSummary = ({ products }) => {
     setIsDropdownOpen(false);
   };
 
-
+console.log("products", products)
 
   const getTotalItem = () => {
     return products.reduce((total, item) => total + item.Quantity, 0);
   };
+ 
 
   const getTotalPrice = () => {
     return products.reduce((total, item) => total + (item.productDetails?.offer_price) * item.Quantity, 0);
@@ -69,7 +70,6 @@ const OrderSummary = ({ products }) => {
   const order = async () => {
     const isScriptLoaded = await loadRazorpayScript();
 
-    console.log("is", isScriptLoaded)
     if (!isScriptLoaded) {
       alert('Razorpay SDK failed to load. Are you online?');
       return;
@@ -84,7 +84,6 @@ const OrderSummary = ({ products }) => {
         return;
       }
 
-      console.log("Payment Success", data)
       const options = {
         key: KEY_ID,
         amount: data.order.amount,
@@ -99,11 +98,13 @@ const OrderSummary = ({ products }) => {
             payment_id: response.razorpay_payment_id,
             amount: data.order.amount,
             currency: data.order.currency,
+            items : products, 
           };
 
           await savePayment(paymentData)
             .then((res) => {
               if (res.status) {
+
                 Swal.fire({
                   icon: 'success',
                   title: 'Payment done successfully',

@@ -94,7 +94,7 @@ const Navbar = () => {
                 <ul className="text-sm text-gray-700">
                   {[
                     { icon: User, label: "My Profile", href: "/profile" },
-                    { icon: WalletCards, label: "Transaction", href: "/transactions" },
+                    { icon: WalletCards, label: "Transaction", href: "/user/transaction" },
                     { icon: Package, label: "Orders", href: "/orders" },
                     { icon: Heart, label: "Wishlist", href: "/wishlist" },
                   ].map(({ icon: Icon, label, href }) => (
