@@ -1,8 +1,10 @@
 const router = require("express").Router()
-const { createOrder, savePayment} = require('../payment/payment')
+const { createOrder, savePayment, getAllPayment} = require('../payment/payment')
 
 router.post("/createOrder", createOrder);
 router.post("/savePayment", savePayment);
+router.post("/getAllPayment", getAllPayment);
+
 
 
 

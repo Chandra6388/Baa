@@ -39,6 +39,20 @@ class Payment {
       res.send({ status: false, error: "Failed to save payment" });
     }
   }
+
+  async getAllPayment(req, res) {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.send({ status: false, message: "User id is require" })
+    }
+    try {
+      const data = await paymentDb.find({ userId: userId })
+      return res.send({ status: true, message: "all transection get successfully", data: data })
+    }
+    catch {
+      return res.send({ status: false, message: "Interal server error , pls try again letter", error: error.message })
+    }
+  }
 }
 
 module.exports = new Payment();

@@ -102,5 +102,15 @@ export const savePayment = async (data) => {
   }
 };
 
+export const getAllPayment = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}getAllPayment`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw error;
+  }
+};
+
 
 
