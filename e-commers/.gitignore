@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/secretFile
 /.pnp
 .pnp.*
 .yarn/*
