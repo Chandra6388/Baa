@@ -95,7 +95,7 @@ const Navbar = () => {
                   {[
                     { icon: User, label: "My Profile", href: "/profile" },
                     { icon: WalletCards, label: "Transaction", href: "/user/transaction" },
-                    { icon: Package, label: "Orders", href: "/orders" },
+                    { icon: Package, label: "Orders", href: "/user/order-details" },
                     { icon: Heart, label: "Wishlist", href: "/wishlist" },
                   ].map(({ icon: Icon, label, href }) => (
                     <li
