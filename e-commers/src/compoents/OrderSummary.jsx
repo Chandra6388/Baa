@@ -22,8 +22,7 @@ const OrderSummary = ({ products }) => {
   useEffect(() => {
     fetchUserAddresses();
   }, [user])
-
-  console.log("cc", totalAmount)
+ 
 
 
   const fetchUserAddresses = async () => {
@@ -71,6 +70,8 @@ const OrderSummary = ({ products }) => {
 
   const order = async () => {
     const isScriptLoaded = await loadRazorpayScript();
+
+    console.log("is", isScriptLoaded)
     if (!isScriptLoaded) {
       alert('Razorpay SDK failed to load. Are you online?');
       return;

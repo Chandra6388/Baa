@@ -63,9 +63,7 @@ const Cart = () => {
       console.log("Error updating quantity", error);
     }
   };
-
-
-  console.log("getProducts", getProducts)
+ 
   return (
     <>
       <Navbar />
