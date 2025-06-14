@@ -2,10 +2,6 @@ const express = require('express');
 const razorpay = require('../razorpay/razorpay');
 const db = require('../../models');
 
-
-
-
-
 class Payment {
   async createOrder(req, res) {
     const { userId, price } = req.body
