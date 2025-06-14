@@ -31,10 +31,10 @@ class Payment {
         currency,
       });
       await newPayment.save();
-      res.status(200).json({ status: true, message: "Payment saved" });
+      res.send({ status: true, message: "Payment saved" });
     } catch (error) {
       console.error("Save payment error:", error);
-      res.status(500).json({ status: false, error: "Failed to save payment" });
+      res.send({ status: false, error: "Failed to save payment" });
     }
   }
 }

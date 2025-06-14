@@ -1,8 +1,8 @@
-import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import { getAddress, createOrder } from '@/service/user/productService'
-import { KEY_SECRET, KEY_ID } from '../../secretFile'
+import { KEY_ID } from '../../secretFile'
+import Swal from "sweetalert2";
 
 const OrderSummary = ({ products }) => {
   const { router } = useAppContext()
@@ -22,7 +22,7 @@ const OrderSummary = ({ products }) => {
   useEffect(() => {
     fetchUserAddresses();
   }, [user])
- 
+
 
 
   const fetchUserAddresses = async () => {
@@ -94,9 +94,32 @@ const OrderSummary = ({ products }) => {
         name: 'Bazaarbeat',
         description: 'Thank you for your purchase',
         order_id: data.order.id,
-        handler: function (response) {
-          console.log('Payment Success:', response);
-          alert('Payment Successful!');
+        handler: async function (response) {
+          const paymentData = {
+            userId: user._id,
+            order_id: data.order.id,
+            payment_id: response.razorpay_payment_id,
+            amount: data.order.amount,
+            currency: data.order.currency,
+          };
+
+          await savePayment(paymentData)
+            .then((res) => {
+              if (res.status) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Payment done successfully',
+                  text: "success",
+                })
+              }
+              else {
+                Swal.fire({
+                  icon: 'error',
+                  title: "error",
+                  text: res.message,
+                })
+              }
+            })
         },
         prefill: {
           name: selectedAddress?.fullname || '',
@@ -114,8 +137,6 @@ const OrderSummary = ({ products }) => {
       alert('Something went wrong. Please try again.');
     }
   };
-
-
 
   useEffect(() => {
     setTotalAmount(getTotalPrice() + Math.floor(getTotalPrice() * 0.02) + (getTotalPrice() > 200 ? 0 : 10))
