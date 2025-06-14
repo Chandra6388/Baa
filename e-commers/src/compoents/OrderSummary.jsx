@@ -1,6 +1,6 @@
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
-import { getAddress, createOrder } from '@/service/user/productService'
+import { getAddress, createOrder, savePayment } from '@/service/user/productService'
 import { KEY_ID } from '../../secretFile'
 import Swal from "sweetalert2";
 
@@ -22,8 +22,6 @@ const OrderSummary = ({ products }) => {
   useEffect(() => {
     fetchUserAddresses();
   }, [user])
-
-
 
   const fetchUserAddresses = async () => {
     if (!user) return

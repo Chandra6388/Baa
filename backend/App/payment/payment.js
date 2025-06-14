@@ -1,5 +1,7 @@
 const db = require('../models');
-const paymentDb = db.payment
+const paymentDb = db.payment;
+const razorpay = require('../razorpay/razorpay');
+
 class Payment {
   async createOrder(req, res) {
     const { userId, price } = req.body;
