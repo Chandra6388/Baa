@@ -5,6 +5,8 @@ module.exports = function (app) {
     app.use(require("./productRoutes"));
     app.use(require("./userRoutes"));
     app.use(require("./addressRoutes"));
+    app.use(require("./payment"));
+
 
 
 };

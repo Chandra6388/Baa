@@ -81,3 +81,20 @@ export const getAddress = async (data) => {
     throw error;
   }
 };
+
+
+
+
+
+export const createOrder = async (data) => {
+  try {
+    const response = await axios.post(`${base_url}createOrder`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw error;
+  }
+};
+
+
+

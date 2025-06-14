@@ -1,14 +1,16 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
-import {getAddress} from '@/service/user/productService'
+import { getAddress, createOrder } from '@/service/user/productService'
+import { KEY_SECRET, KEY_ID } from '../../secretFile'
 
-const OrderSummary = ({products}) => {
-  const { currency, router } = useAppContext()
+const OrderSummary = ({ products }) => {
+  const { router } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
   const [user, setUser] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(0)
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -20,6 +22,9 @@ const OrderSummary = ({products}) => {
   useEffect(() => {
     fetchUserAddresses();
   }, [user])
+
+  console.log("cc", totalAmount)
+
 
   const fetchUserAddresses = async () => {
     if (!user) return
@@ -44,19 +49,75 @@ const OrderSummary = ({products}) => {
     setIsDropdownOpen(false);
   };
 
-  const createOrder = async () => {
 
-  }
 
   const getTotalItem = () => {
-  return products.reduce((total, item) => total + item.Quantity, 0);
-};
+    return products.reduce((total, item) => total + item.Quantity, 0);
+  };
 
- const getTotalPrice = () => {
-  return products.reduce((total, item) => total + (item.productDetails?.offer_price)*item.Quantity, 0);
-};
+  const getTotalPrice = () => {
+    return products.reduce((total, item) => total + (item.productDetails?.offer_price) * item.Quantity, 0);
+  };
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const order = async () => {
+    const isScriptLoaded = await loadRazorpayScript();
+    if (!isScriptLoaded) {
+      alert('Razorpay SDK failed to load. Are you online?');
+      return;
+    }
+
+    try {
+      const req = { userId: user._id, price: totalAmount };
+      const data = await createOrder(req); 
+
+      if (!data.status) {
+        alert('Order creation failed');
+        return;
+      }
+
+      const options = {
+        key: KEY_ID,
+        amount: data.order.amount, 
+        currency: data.order.currency,
+        name: 'Your Company Name',
+        description: 'Thank you for your purchase',
+        order_id: data.order.id,
+        handler: function (response) {
+          console.log('Payment Success:', response);
+          alert('Payment Successful!');
+        },
+        prefill: {
+          name: selectedAddress?.fullname || '',
+          email: 'user@example.com',
+          contact: selectedAddress?.phone || '',
+        },
+        theme: {
+          color: '#F37254',
+        },
+      };
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error('Error while processing payment:', err);
+      alert('Something went wrong. Please try again.');
+    }
+  };
 
 
+
+  useEffect(() => {
+    setTotalAmount(getTotalPrice() + Math.floor(getTotalPrice() * 0.02) + (getTotalPrice() > 200 ? 0 : 10))
+  }, [products])
 
   return (
     <div className="w-full md:w-96 bg-gray-500/5 p-5">
@@ -76,7 +137,7 @@ const OrderSummary = ({products}) => {
             >
               <span>
                 {selectedAddress
-                  ? `${selectedAddress.fullname}, ${selectedAddress?.address}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.phone}, ${"Pin: "+selectedAddress?.pinCode}`
+                  ? `${selectedAddress.fullname}, ${selectedAddress?.address}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.phone}, ${"Pin: " + selectedAddress?.pinCode}`
                   : "Select Address"}
               </span>
               <svg className={`w-5 h-5 inline float-right transition-transform duration-200 ${isDropdownOpen ? "rotate-0" : "-rotate-90"}`}
@@ -94,7 +155,7 @@ const OrderSummary = ({products}) => {
                     className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer"
                     onClick={() => handleAddressSelect(address)}
                   >
-                    {address.fullname}, {address.address}, {address.city}, {address.state}, {address.phone}, {"Pin: "+address?.pinCode}
+                    {address.fullname}, {address.address}, {address.city}, {address.state}, {address.phone}, {"Pin: " + address?.pinCode}
                   </li>
                 ))}
                 <li
@@ -133,7 +194,7 @@ const OrderSummary = ({products}) => {
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
-            <p className="font-medium text-gray-800">{getTotalPrice()>200 ? "Free" : "$"+10}</p>
+            <p className="font-medium text-gray-800">{getTotalPrice() > 200 ? "Free" : "$" + 10}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Tax (2%)</p>
@@ -141,12 +202,12 @@ const OrderSummary = ({products}) => {
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>${getTotalPrice() + Math.floor(getTotalPrice() * 0.02) + (getTotalPrice()>200 ? 0 : 10)}</p>
+            <p>${totalAmount}</p>
           </div>
         </div>
       </div>
 
-      <button onClick={createOrder} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
+      <button onClick={order} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
         Place Order
       </button>
     </div>
