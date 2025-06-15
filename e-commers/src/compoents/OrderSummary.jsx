@@ -3,9 +3,13 @@ import React, { useEffect, useState } from "react";
 import { getAddress, createOrder, savePayment } from '@/service/user/productService'
 import { KEY_ID } from '../../secretFile'
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+
 
 const OrderSummary = ({ products }) => {
-  const { router } = useAppContext()
+
+    const router = useRouter()
+
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);

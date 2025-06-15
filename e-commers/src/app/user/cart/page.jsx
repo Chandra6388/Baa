@@ -6,12 +6,14 @@ import Image from "next/image";
 import Navbar from "@/compoents/Navbar";
 import { useAppContext } from "@/context/AppContext";
 import { getCartProduct, quantityIncOrDce } from "@/service/user/productService";
+import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const [getProducts, setProducts] = useState([]);
   const [user, setUser] = useState(null);
+  const router = useRouter()
 
-  const { router, getCartCount } = useAppContext();
+  const {getCartCount } = useAppContext();
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -152,7 +154,7 @@ const Cart = () => {
             </table>
           </div>
           <button
-            onClick={() => router.push("/all-products")}
+            onClick={() => router.push("/user/all-products")}
             className="group flex items-center mt-6 gap-2 text-orange-600"
           >
             <Image

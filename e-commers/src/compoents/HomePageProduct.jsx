@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
-import { useAppContext } from "@/context/AppContext";
 import { getTopRatedProducts } from "@/service/user/productService";
+import { useRouter } from "next/navigation";
 
 const HomeProducts = () => {
-
+  const router = useRouter()
   const [getTopRatedProductsData, setGetTopRatedProductsData] = useState([]);
   const [user, setUser] = useState(null);
-
-
-
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -42,7 +39,6 @@ const HomeProducts = () => {
       })
   }
 
-  const { router } = useAppContext()
 
   return (
     <div className="flex flex-col items-center pt-14">
