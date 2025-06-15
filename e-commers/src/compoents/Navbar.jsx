@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { assets } from "@/assets/assets";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   User,
@@ -15,7 +16,8 @@ import {
 
 
 const Navbar = () => {
-  const { router, isSeller, cart } = useAppContext();
+  const router = useRouter()
+  const { cart } = useAppContext();
   const [userData, setUserData] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,10 +59,10 @@ const Navbar = () => {
 
       {/* Desktop Menu */}
       <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
-        <Link href="/" className="hover:text-gray-900 transition">Home</Link>
-        <Link href="/user/all-products" className="hover:text-gray-900 transition">Shop</Link>
-        <Link href="/user/about" className="hover:text-gray-900 transition">About Us</Link>
-        <Link href="/user/contact" className="hover:text-gray-900 transition">Contact</Link>
+        <span onClick={() => router.push('/')} className="hover:text-gray-900 cursor-pointer transition">Home</span >
+        <span onClick={() => router.push('/user/all-products')} className="hover:text-gray-900 cursor-pointer transition">Shop</span >
+        <span onClick={() => router.push('/user/about')} className="hover:text-gray-900 cursor-pointer transition">About Us</span >
+        <span onClick={() => router.push('/user/contact')} className="hover:text-gray-900 cursor-pointer transition">Contact</span >
         {userData?.role === "SELLER" && (
           <button
             onClick={() => router.push("/seller")}
@@ -84,7 +86,6 @@ const Navbar = () => {
             >
               <div className="text-sm text-right hidden md:block">
                 <p className="font-semibold leading-tight">{userData.username}</p>
-               
               </div>
             </div>
 
@@ -93,17 +94,14 @@ const Navbar = () => {
               <div className="absolute right-0 mt-3 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2 transition-all">
                 <ul className="text-sm text-gray-700">
                   {[
-                    { icon: User, label: "My Profile", href: "/profile" },
-                    { icon: WalletCards, label: "Transaction", href: "/user/transaction" },
-                    { icon: Package, label: "Orders", href: "/user/order-details" },
-                    { icon: Heart, label: "Wishlist", href: "/wishlist" },
-                  ].map(({ icon: Icon, label, href }) => (
-                    <li
-                      key={label}
-                      className="hover:bg-gray-100 px-4 py-2 flex items-center gap-2 cursor-pointer"
-                    >
+                    { icon: User, label: "My Profile", path: "/user/profile" },
+                    { icon: WalletCards, label: "Transaction", path: "/user/transaction" },
+                    { icon: Package, label: "Orders", path: "/user/order-details" },
+                    { icon: Heart, label: "Wishlist", path: "/user/wishlist" },
+                  ].map(({ icon: Icon, label, path }) => (
+                    <li key={label} onClick={() => router.push(path)} className="hover:bg-gray-100 px-4 py-2 flex items-center gap-2 cursor-pointer" >
                       <Icon className="w-4 h-4 text-gray-600" />
-                      <Link href={href}>{label}</Link>
+                      <span>{label}</span>
                     </li>
                   ))}
 
@@ -132,7 +130,7 @@ const Navbar = () => {
         )}
 
         {/* Cart */}
-        <div className="relative cursor-pointer" onClick={() => router.push("/cart")}>
+        <div className="relative cursor-pointer" onClick={() => router.push("/user/cart")}>
           <ShoppingCart size={24} className="hover:text-gray-900 transition" />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">

@@ -48,6 +48,11 @@ const paymentSchema = new mongoose.Schema({
       required: true,
     }
   }],
+  address: {
+    type: String,
+    trim: true,
+    default: null
+  },
   status: {
     type: String,
     default: "success",

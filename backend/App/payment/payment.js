@@ -23,7 +23,7 @@ class Payment {
 
   async savePayment(req, res) {
     try {
-      const { userId, order_id, payment_id, amount, currency, items } = req.body;
+      const { userId, order_id, payment_id, amount, currency, items , address} = req.body;
 
       const newPayment = new paymentDb({
         userId,
@@ -31,7 +31,8 @@ class Payment {
         payment_id,
         amount,
         currency,
-        items
+        items,
+        address
       });
       await newPayment.save();
       res.send({ status: true, message: "Payment saved" });

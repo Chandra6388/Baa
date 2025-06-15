@@ -1,8 +1,6 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { assets, productsDummyData } from "@/assets/assets";
 import Image from "next/image";
-import { useAppContext } from "@/context/AppContext";
 import Footer from "@/compoents/seller/Footer";
 import Loading from "@/compoents/Loading";
 import Navbar from "@/compoents/Navbar";
@@ -48,7 +46,16 @@ const ProductList = () => {
         return items.map(item => item?.productDetails?.name).join(", ");
     };
 
-    const allItems = getAllTransaction.flatMap
+    const allItems = getAllTransaction.flatMap(order =>
+        order.items.map(item => ({
+            ...item,
+            order_id: order.order_id
+        }))
+    );
+
+    console.log("SS", allItems);
+    console.log("getAllTransaction", getAllTransaction);
+
 
     return (
         <>
@@ -61,24 +68,24 @@ const ProductList = () => {
                             <table className="table-fixed w-full border-collapse">
                                 <thead className="text-gray-900 text-sm text-left bg-gray-100">
                                     <tr>
-                                        <th className="w-2/5 px-4 py-3 font-medium truncate">Product Names</th>
+                                        <th className=" px-4 py-3 font-medium truncate">Item</th>
+                                        <th className="px-4 py-3 font-medium truncate max-sm:hidden">Quantity</th>
+                                        <th className="px-4 py-3 font-medium truncate max-sm:hidden">Price</th>
                                         <th className="px-4 py-3 font-medium truncate max-sm:hidden">Order ID</th>
-                                        <th className="px-4 py-3 font-medium truncate">Payment ID</th>
-                                        <th className="px-4 py-3 font-medium truncate max-sm:hidden">Amount</th>
-                                        <th className="px-4 py-3 font-medium truncate max-sm:hidden">Status</th>
+                                        <th className="px-4 py-3 font-medium truncate">Items ID</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm text-gray-600">
-                                    {getAllTransaction?.length > 0 ? (
-                                        getAllTransaction.map((items, index) => (
+                                    {allItems?.length > 0 ? (
+                                        allItems.map((items, index) => (
                                             <tr key={index} className="border-t border-gray-300 hover:bg-gray-50">
-                                                <td className="px-4 py-3 truncate">{getNames(items?.items)}</td>
-                                                <td className="px-4 py-3 truncate max-sm:hidden">{items?.order_id}</td>
-                                                <td className="px-4 py-3 truncate">{items?.payment_id}</td>
-                                                <td className="px-4 py-3 truncate max-sm:hidden">₹ {(items?.amount)/100}</td>
-                                                <td className="px-4 py-3 truncate max-sm:hidden capitalize">
-                                                    {items?.status || "pending"}
+                                                <td className="px-4 py-3 truncate">
+                                                    <Image src={items?.productDetails?.image_url[0]} alt="search icon" width={50} height={50} />
                                                 </td>
+                                                <td className="px-4 py-3 truncate max-sm:hidden">{items?.Quantity}</td>
+                                                <td className="px-4 py-3 truncate max-sm:hidden capitalize">₹ {items?.productDetails?.offer_price}</td>
+                                                <td className="px-4 py-3 truncate max-sm:hidden">{items?.order_id}</td>
+                                                <td className="px-4 py-3 truncate">{items?._id}</td>
                                             </tr>
                                         ))
                                     ) : (

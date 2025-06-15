@@ -1,15 +1,11 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { assets, productsDummyData } from "@/assets/assets";
-import Image from "next/image";
-import { useAppContext } from "@/context/AppContext";
 import Footer from "@/compoents/seller/Footer";
 import Loading from "@/compoents/Loading";
 import Navbar from "@/compoents/Navbar";
 import { getAllPayment } from '@/service/user/productService'
 
 const ProductList = () => {
-    const { router } = useAppContext()
     const [loading, setLoading] = useState(true)
     const [getAllTransaction, setAllTransaction] = useState([])
     const [user, setUser] = useState(null);

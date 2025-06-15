@@ -46,7 +46,6 @@ const OrderSummary = ({ products }) => {
     setIsDropdownOpen(false);
   };
 
-console.log("products", products)
 
   const getTotalItem = () => {
     return products.reduce((total, item) => total + item.Quantity, 0);
@@ -67,6 +66,7 @@ console.log("products", products)
     });
   };
 
+  console.log("selectedAddress", selectedAddress)
   const order = async () => {
     const isScriptLoaded = await loadRazorpayScript();
 
@@ -98,7 +98,8 @@ console.log("products", products)
             payment_id: response.razorpay_payment_id,
             amount: data.order.amount,
             currency: data.order.currency,
-            items : products, 
+            items : products,
+            address: `${selectedAddress?.fullname}, ${selectedAddress?.address}, ${selectedAddress?.city}, ${selectedAddress?.state}, ${selectedAddress?.phone}, ${"Pin: " + selectedAddress?.pinCode}`
           };
 
           await savePayment(paymentData)
