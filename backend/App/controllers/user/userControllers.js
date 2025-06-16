@@ -144,10 +144,7 @@ class User {
             });
         }
     }
-
-
-
-    
+ 
     async profile(req,res){
         const {userId}= req.body;
         if(!userId){
