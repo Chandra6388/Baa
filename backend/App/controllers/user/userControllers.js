@@ -2,6 +2,9 @@
 const { default: mongoose } = require('mongoose');
 const db = require('../../models');
 const addToCardDB = db.addToCard1;
+const userDb = db.user;
+const paymentDb = db.payment;
+
 
 class User {
     async AddToCart(req, res) {
@@ -139,6 +142,21 @@ class User {
                 message: "Internal server error",
                 error: error.message,
             });
+        }
+    }
+
+    async profile(req,res){
+        const {userId}= req.body;
+        if(!userId){
+            return res.send({status:false,message:"User id is require"})
+        }
+        try{
+            const userData = await userDb.findOne({_id:userId}).select("username phone email")
+            const totalOrder = await orderDb.find
+
+        }
+        catch(error){
+            return res.send({status:false, message:"Internal server error, pls try again latter", error:error.message})
         }
     }
 
