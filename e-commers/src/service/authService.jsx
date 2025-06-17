@@ -21,4 +21,13 @@ export const register = async (user) => {
   }
 };
 
+export const profile = async (user) => {
+  try {
+    const response = await axios.post(`${base_url}profile`, user);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
 

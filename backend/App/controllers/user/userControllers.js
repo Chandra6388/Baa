@@ -60,7 +60,7 @@ class User {
             return res.send({ status: false, message: "User id is require" })
         }
         try {
-           
+
             const filterData = await addToCardDB.aggregate([
                 {
                     $match: {
@@ -70,7 +70,7 @@ class User {
                 {
                     $lookup: {
                         from: "products",
-                        localField:"productId",
+                        localField: "productId",
                         foreignField: "_id",
                         as: "productDetails"
                     }
@@ -144,21 +144,54 @@ class User {
             });
         }
     }
- 
-    async profile(req,res){
-        const {userId}= req.body;
-        if(!userId){
-            return res.send({status:false,message:"User id is require"})
-        }
-        try{
-            const userData = await userDb.findOne({_id:userId}).select("username phone email")
-            const totalOrder = await orderDb.find
 
+    async profile(req, res) {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                status: false,
+                message: "User ID is required",
+            });
         }
-        catch(error){
-            return res.send({status:false, message:"Internal server error, pls try again latter", error:error.message})
+
+        try {
+            const userData = await userDb.findById(userId).select("username phone email");
+            if (!userData) {
+                return res.status(404).json({
+                    status: false,
+                    message: "User not found",
+                });
+            }
+            const orders = await paymentDb.find({ userId });
+            const countNumberOfItemOrder = orders.reduce((sum, order) => {
+                return sum + (order?.items?.length || 0);
+            }, 0);
+
+            const recentOrder = [...orders]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+
+            return res.status(200).json({
+                status: true,
+                message: "User profile data retrieved successfully",
+                data: {
+                    userData,
+                    totalOrders: orders.length,
+                    countNumberOfItemOrder,
+                    recentOrder,
+                },
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                status: false,
+                message: "Internal server error, please try again later",
+                error: error.message,
+            });
         }
     }
+
 
 }
 
