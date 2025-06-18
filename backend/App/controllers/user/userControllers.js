@@ -156,7 +156,7 @@ class User {
         }
 
         try {
-            const userData = await userDb.findById(userId).select("username phone email");
+            const userData = await userDb.findById(userId).select("username phone email profile_image");
             if (!userData) {
                 return res.status(404).json({
                     status: false,

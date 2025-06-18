@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/compoents/Navbar";
 import { profile } from '@/service/authService'
-
+import { Camera } from 'lucide-react';
 export default function UserProfile() {
   const [profileData, setProfileData] = useState(null)
   const [user, setUser] = useState(null);
-
+  const [image, setImage] = useState(null);
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -18,7 +18,7 @@ export default function UserProfile() {
     getProfile()
   }, [user])
 
-  console.log("profileData", profileData)
+  console.log("image", image)
   const getProfile = async () => {
     if (!user) return
     const req = { userId: user?._id }
@@ -35,24 +35,56 @@ export default function UserProfile() {
         console.log("Error in fetching profile data", error)
       })
   }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file));
+      // 🧠 Optional: Send image to backend here using FormData
+    }
+  };
+
   return (
     <>
       <Navbar />
       <div className="min-h-screen bg-gray-100 p-4 mt-14 flex justify-center">
         <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl p-6">
           {/* User Header */}
+
           <div className="flex items-center gap-6 border-b pb-6">
-            <img
-              src="https://i.pravatar.cc/150?img=5"
-              alt="user"
-              className="w-20 h-20 rounded-full border-4 border-blue-500"
-            />
+            <div className="relative w-20 h-20">
+              <img
+                src={profileData?.userData?.profile_image || "https://i.pravatar.cc/150?img=5"}
+                alt="user"
+                className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
+              />
+              <label
+                htmlFor="profile-image-upload"
+                className="absolute bottom-0 right-0 bg-blue-400 p-1 rounded-full cursor-pointer"
+              >
+                <Camera />
+                <input
+                  id="profile-image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </label>
+            </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">{profileData?.userData?.username}</h2>
-              <p className="text-gray-600">{profileData?.userData?.email}</p>
-              <p className="text-gray-500">{profileData?.userData?.phone}</p>
+              <div className="text-xl font-bold text-gray-800">
+                {profileData?.userData?.username || "Your Name"}
+              </div>
+              <div className="text-gray-600">
+                <span className="font-medium">Email: </span>{profileData?.userData?.email || "your@email.com"}
+              </div>
+              <div className="text-gray-500">
+                <span className="font-medium">Phone: </span>{profileData?.userData?.phone || "1234567890"}
+              </div>
             </div>
           </div>
+
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-4 mt-6 text-center">
@@ -87,7 +119,7 @@ export default function UserProfile() {
           <div className="mt-10">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Orders</h3>
             <div className="space-y-4">
-              {profileData?.recentOrder?.map((items,index) => {
+              {profileData?.recentOrder?.map((items, index) => {
                 return (
                   <div key={index} className="p-4 border rounded-xl flex justify-between items-center">
                     <div>
