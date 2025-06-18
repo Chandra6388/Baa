@@ -31,3 +31,13 @@ export const profile = async (user) => {
   }
 };
 
+export const profileImg = async (user) => {
+  try {
+    const response = await axios.post(`${base_url}profileImg`, user);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+

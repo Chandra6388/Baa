@@ -115,8 +115,8 @@ class Auth {
             });
         }
     }
-    
-    async profileImg(req, body) {
+
+    async profileImg(req, res) {
         const { userId, image } = req.body;
         if (!userId) {
             return res.status(404).json({ status: false, message: "User id is require" })
@@ -125,7 +125,7 @@ class Auth {
             return res.status(404).json({ status: false, message: "image url is require" })
         }
         try {
-            const update = await User.findByIDAndUpdate(userId, { profile_image: image }, { new: true })
+            const update = await User.findByIdAndUpdate(userId, { profile_image: image }, { new: true })
             if (!update) {
                 return res.status(404).json({
                     status: false,

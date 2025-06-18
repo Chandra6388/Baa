@@ -1,12 +1,15 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import Navbar from "@/compoents/Navbar";
-import { profile } from '@/service/authService'
+import { profile , profileImg} from '@/service/authService'
 import { Camera } from 'lucide-react';
+import Swal from "sweetalert2";
+import uploadToCloudinary from "@/service/seller/UploadImg.service";
 export default function UserProfile() {
   const [profileData, setProfileData] = useState(null)
   const [user, setUser] = useState(null);
   const [image, setImage] = useState(null);
+  const [loading, setLoading]= useState(true)
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -18,7 +21,6 @@ export default function UserProfile() {
     getProfile()
   }, [user])
 
-  console.log("image", image)
   const getProfile = async () => {
     if (!user) return
     const req = { userId: user?._id }
@@ -36,11 +38,47 @@ export default function UserProfile() {
       })
   }
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
+    setLoading(true);
     const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      // 🧠 Optional: Send image to backend here using FormData
+    try {
+      const uploadedImageUrls = await  uploadToCloudinary(file)
+
+      console.log("ee", uploadedImageUrls)
+      
+      const req = {
+        userId: user?._id,
+        image: uploadedImageUrls,
+      }
+
+      console.log("req", req)
+      await profileImg(req)
+        .then((res) => {
+          if (res.status) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Product added successfully',
+              showConfirmButton: false,
+              timer: 1500
+            })
+            setLoading(false);
+           
+          }
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: res.message,
+            })
+            setLoading(false);
+          }
+        })
+        .catch((err) => {
+          console.log("error in adding product", err);
+          setLoading(false);
+        })
+    } catch (error) {
+      console.error("Upload error", error);
     }
   };
 
