@@ -6,7 +6,6 @@ const User = db.user;
 
 class Auth {
 
-    // Login User
     async login(req, res) {
         const { email, password } = req.body;
         if(!email) {
@@ -69,6 +68,19 @@ class Auth {
             return res.send({ status: true, message: "User registered successfully", user: savedUser });
         } catch (error) {
             return res.send({ message: "Error registering user", error });
+        }
+    }
+
+    async update(req, res){
+        const {userId}= req.body;
+        if(!userId){
+            return res.status(400).json({status:false, message:"User Id is require"})
+        }
+        try{
+
+        }
+        catch(error){
+
         }
     }
 }
