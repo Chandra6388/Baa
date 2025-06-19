@@ -7,9 +7,7 @@ import Swal from "sweetalert2";
 import uploadToCloudinary from "@/service/seller/UploadImg.service";
 import Slider from '@mui/material/Slider';
 import Cropper, { Area } from 'react-easy-crop';
-import { useRouter } from "next/navigation";
 export default function UserProfile() {
-   const router = useRouter()
   const [profileData, setProfileData] = useState(null)
   const [user, setUser] = useState(null);
   const [cropSrc, setCropSrc] = useState(null);
@@ -158,79 +156,7 @@ export default function UserProfile() {
       <div className="min-h-screen bg-gray-100 p-4 mt-14 flex justify-center">
         <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl p-6">
 
-          <div className="relative w-20 h-20">
-            <img
-              src={profileData?.userData?.profile_image || "https://i.pravatar.cc/150?img=5"}
-              alt="user"
-              className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
-            />
-            <label
-              htmlFor="profile-image-upload"
-              className="absolute bottom-0 right-0 bg-blue-400 p-1 rounded-full cursor-pointer"
-            >
-              <Camera />
-              <input
-                id="profile-image-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-            </label>
-          </div>
-
-          {showCropper && cropSrc && (
-            <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
-              <div className="w-full max-w-sm bg-[#020e1f] rounded-lg overflow-hidden border border-white shadow-2xl">
-                <div className="relative h-96">
-                  <Cropper
-                    image={cropSrc}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={1}
-                    cropShape="round"
-                    showGrid={false}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                  />
-                </div>
-                <div className="space-y-4 px-6 py-4">
-                  <Slider
-                    value={zoom}
-                    min={1}
-                    max={3}
-                    step={0.1}
-                    onChange={(_, newValue) => setZoom(newValue)}
-                  />
-                  <div className="flex justify-between">
-                    <button
-                      onClick={() => setShowCropper(false)}
-                      className="px-4 py-2 bg-gray-500 text-white rounded"
-                    >
-                      Cancel
-                    </button>
-                    <button onClick={handleCropApply} variant="teal" className="text-white" disabled={uploading}>
-                      {uploading ? "Uploading..." : "Apply"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <div className="text-xl font-bold text-gray-800">
-              {profileData?.userData?.username || "Your Name"}
-            </div>
-            <div className="text-gray-600">
-              <span className="font-medium">Email: </span>{profileData?.userData?.email || "your@email.com"}
-            </div>
-            <div className="text-gray-500">
-              <span className="font-medium">Phone: </span>{profileData?.userData?.phone || "1234567890"}
-            </div>
-          </div>
-
+          
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-4 mt-6 text-center">
@@ -253,7 +179,7 @@ export default function UserProfile() {
             <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
               Edit Profile
             </button>
-            <button className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700" onClick={()=>router.push('/user/manage-addresses')}>
+            <button className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700">
               Manage Addresses
             </button>
             <button className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">
