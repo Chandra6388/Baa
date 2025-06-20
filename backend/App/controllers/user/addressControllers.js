@@ -5,7 +5,7 @@ const addressDB = db.address;
 
 class Address {
     async addAddress(req, res) {
-        const { userId, fullname, phone, pinCode, address, city, state } = req.body
+        const { userId, fullname, phone, pinCode, address, city, state,country } = req.body
         if (!userId) {
             return res.send({ status: false, message: "User id is require" })
         }
@@ -27,9 +27,12 @@ class Address {
         if (!state) {
             return res.send({ status: false, message: "state is require" })
         }
+         if (!country) {
+            return res.send({ status: false, message: "country is require" })
+        }
         try{
             const newAddress = new addressDB({
-                 userId, fullname, phone, pinCode, address, city, state
+                 userId, fullname, phone, pinCode, address, city, state,country
             })
             await newAddress.save();
             return res.send({status:true,message:"new address added successfully", data:newAddress})

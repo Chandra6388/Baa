@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require('../../models');
 const User = db.user;
+const addressDB = db.address;
+
 
 class Auth {
 
@@ -72,24 +74,24 @@ class Auth {
     }
 
     async update(req, res) {
-        const { userId, address, city, state, country, zip } = req.body;
-
+        const { userId, address, city, country, pinCode, phone, state, fullname, } = req.body;
         if (!userId) {
             return res.status(400).json({
                 status: false,
                 message: "User ID is required",
             });
         }
-
         try {
-            const updatedUser = await User.findByIdAndUpdate(
+            const updatedUser = await addressDB.findByIdAndUpdate(
                 userId,
                 {
                     address,
                     city,
-                    state,
                     country,
-                    zip,
+                    pinCode,
+                    phone,
+                    state,
+                    fullname,
                 },
                 { new: true }
             );
@@ -104,7 +106,7 @@ class Auth {
             return res.status(200).json({
                 status: true,
                 message: "User updated successfully",
-                data: updatedUser, // Optional: return updated user
+                data: updatedUser,
             });
 
         } catch (error) {

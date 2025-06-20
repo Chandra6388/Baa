@@ -41,3 +41,13 @@ export const profileImg = async (user) => {
   }
 };
 
+export const update = async (user) => {
+  try {
+    const response = await axios.post(`${base_url}update`, user);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+

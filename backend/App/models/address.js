@@ -31,6 +31,11 @@ const addressSchema = new mongoose.Schema({
         default: null,
         trim: true
     },
+    country: {
+        type: String,
+        default: null,
+        trim: true
+    },
     state: {
         type: String,
         default: null,
@@ -41,7 +46,7 @@ const addressSchema = new mongoose.Schema({
         timestamps: true
     });
 
- 
+
 module.exports = mongoose.model("address", addressSchema);
 
 
