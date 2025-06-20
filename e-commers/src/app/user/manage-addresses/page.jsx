@@ -22,6 +22,7 @@ export default function UserProfile() {
   }, [user])
 
 
+  
   const getProfile = async () => {
     if (!user) return
     const req = { userId: user?._id }
