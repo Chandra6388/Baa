@@ -11,7 +11,6 @@ export default function UserProfile() {
   const router = useRouter();
   const [address, setAddress] = useState([]);
   const [user, setUser] = useState(null);
-  const [editIndex, setEditIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [editData, setEditData] = useState({
     address: "",
@@ -19,7 +18,10 @@ export default function UserProfile() {
     state: "",
     country: "",
     pinCode: "",
+    phone: "",
+    fullname: ""
   });
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -49,16 +51,18 @@ export default function UserProfile() {
       });
   };
 
-  const openEditModal = (index) => {
-    const current = address[index];
+  const openEditModal = (selectedAddress) => {
+
     setEditData({
-      address: current?.address || "",
-      city: current?.city || "",
-      state: current?.state || "",
-      country: current?.country || "",
-      pinCode: current?.pinCode || "",
+      address: selectedAddress?.address || "",
+      city: selectedAddress?.city || "",
+      state: selectedAddress?.state || "",
+      country: selectedAddress?.country || "",
+      pinCode: selectedAddress?.pinCode || "",
+      fullname: selectedAddress?.fullname || "",
+      phone: selectedAddress?.phone || "",
+
     });
-    setEditIndex(index);
     setIsModalOpen(true);
   };
 
@@ -74,9 +78,10 @@ export default function UserProfile() {
       city: editData?.city,
       state: editData?.state,
       country: editData?.country,
-      zip: editData?.pinCode
+      pinCode: editData?.pinCode,
+      phone,
+      fullname
     }
-
     await update(req)
       .then((res) => {
         if (res?.status) {
@@ -103,8 +108,8 @@ export default function UserProfile() {
         console.log("Error in updating address", error)
       })
 
-    
-    
+
+
   };
 
   const handleSelectAddress = (index) => {
@@ -148,7 +153,7 @@ export default function UserProfile() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          openEditModal(index);
+                          openEditModal(items);
                         }}
                         className="text-blue-600 hover:text-blue-800"
                       >
@@ -187,7 +192,7 @@ export default function UserProfile() {
               }}
               className="space-y-3"
             >
-              {["address", "city", "state", "country", "pinCode"].map((field) => (
+              {["fullname", "phone","address", "city", "state", "country", "pinCode"].map((field) => (
                 <input
                   key={field}
                   name={field}

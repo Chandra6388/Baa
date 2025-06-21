@@ -74,8 +74,8 @@ class Auth {
     }
 
     async update(req, res) {
-        const { userId, address, city, country, pinCode, phone, state, fullname, } = req.body;
-        if (!userId) {
+        const { id, address, city, country, pinCode, phone, state, fullname, } = req.body;
+        if (!id) {
             return res.status(400).json({
                 status: false,
                 message: "User ID is required",
@@ -83,7 +83,7 @@ class Auth {
         }
         try {
             const updatedUser = await addressDB.findByIdAndUpdate(
-                userId,
+                id,
                 {
                     address,
                     city,
